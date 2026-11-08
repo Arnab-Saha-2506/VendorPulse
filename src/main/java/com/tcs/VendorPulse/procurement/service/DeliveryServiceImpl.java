@@ -24,8 +24,9 @@ public class DeliveryServiceImpl implements DeliveryService {
         if (accepted + rejected > delivered)
             throw new IllegalArgumentException("accepted+rejected > delivered");
         PurchaseOrder po = pos.findById(poId).orElseThrow();
+        int poQty = po.getItems().stream().mapToInt(PurchaseOrderItem::getQuantity).sum();
         int totalDelivered = deliveries.totalDelivered(poId);
-        if (totalDelivered + delivered > po.getTotalAmount().intValue()) // or PO quantity if items
+        if (totalDelivered + delivered > poQty)
             throw new IllegalArgumentException("Total delivered exceeds PO quantity");
         Delivery d = new Delivery();
         d.setPurchaseOrder(po);
@@ -34,7 +35,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         d.setAcceptedQty(accepted);
         d.setRejectedQty(rejected);
         d.setRemarks(remarks);
-        d.setStatus(totalDelivered + delivered >= /* po qty */ delivered ? DeliveryStatus.DELIVERED
+        d.setStatus((totalDelivered + delivered >= poQty) ? DeliveryStatus.DELIVERED
                 : DeliveryStatus.PARTIALLY_DELIVERED);
         return deliveries.save(d);
     }

@@ -14,7 +14,9 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     @Transactional
     public PurchaseOrder generateFromAgreement(Long agreementId) {
         Agreement ag = agreements.findById(agreementId).orElseThrow();
-        if (ag.getStatus().name().equals("ACTIVE")) throw new IllegalStateException("Agreement must be ACTIVE");
+        if (ag.getStatus() != AgreementStatus.ACTIVE) {
+            throw new IllegalStateException("Only finalized agreements can generate Purchase Orders");
+        }
         PurchaseOrder po = new PurchaseOrder();
         po.setAgreement(ag); po.setPoNumber("PO-"+UUID.randomUUID().toString().substring(0,8).toUpperCase());
         po.setIssueDate(LocalDate.now()); po.setTotalAmount(ag.getPrice()); po.setStatus(PoStatus.CONFIRMED);

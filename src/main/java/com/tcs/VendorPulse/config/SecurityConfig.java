@@ -22,9 +22,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(c -> c.disable())
-                .authorizeHttpRequests(a -> a.requestMatchers("/api/suppliers/register").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated());
+            .authorizeHttpRequests(a -> a.requestMatchers("/api/suppliers/register").permitAll()
+                    .requestMatchers("/api/auth/login").permitAll()
+                    .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                    .anyRequest().authenticated());
         return http.build();
     }
 
