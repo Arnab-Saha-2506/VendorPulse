@@ -65,7 +65,14 @@ public class PurchaseOrderItem {
         return totalPrice;
     }
 
-    public void setTotalPrice(BigDecimal t) {
-        this.totalPrice = t;
+    @Column(nullable = false, precision = 5, scale = 2)
+    private BigDecimal taxRate = BigDecimal.ZERO;
+
+    public BigDecimal getTaxRate() {
+        return taxRate;
+    }
+
+    public void setTaxRate(BigDecimal r) {
+        this.taxRate = r;
     }
 }
