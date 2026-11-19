@@ -31,3 +31,10 @@ build/
 
 ### VS Code ###
 .vscode/
+.env
+
+.m2/
+uploads/
+
+.m2/
+uploads/
