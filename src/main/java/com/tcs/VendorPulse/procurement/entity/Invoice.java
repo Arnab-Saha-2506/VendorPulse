@@ -36,6 +36,8 @@ public class Invoice {
     @Column(nullable = false)
     private LocalDateTime createdAt;
     private LocalDateTime confirmedAt;
+    @Column(columnDefinition = "TEXT")
+    private String rejectionReason;
     private LocalDateTime finalizedAt;
 
     @PrePersist
@@ -129,5 +131,13 @@ public class Invoice {
 
     public void setFinalizedAt(LocalDateTime d) {
         this.finalizedAt = d;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
+
+    public void setRejectionReason(String r) {
+        this.rejectionReason = r;
     }
 }

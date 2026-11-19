@@ -84,4 +84,22 @@ public class InvoiceServiceImpl implements InvoiceService {
         inv.setFinalizedAt(LocalDateTime.now());
         return invoices.save(inv);
     }
+
+    @Transactional
+    public Invoice approve(Long id, Long managerId) {
+        Invoice inv = get(id);
+        if (inv.getStatus() != InvoiceStatus.CONFIRMED)
+            throw new IllegalStateException("Only confirmed invoices can be approved");
+        inv.setStatus(InvoiceStatus.FINALIZED);
+        inv.setFinalizedAt(LocalDateTime.now());
+        return invoices.save(inv);
+    }
+
+    @Transactional
+    public Invoice reject(Long id, Long managerId, String reason) {
+        Invoice inv = get(id);
+        inv.setStatus(InvoiceStatus.DRAFT);
+        inv.setRejectionReason(reason);
+        return invoices.save(inv);
+    }
 }

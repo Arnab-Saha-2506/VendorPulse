@@ -20,14 +20,18 @@ public class Agreement {
     private String title;
     @Column(columnDefinition = "TEXT")
     private String terms;
+    @Column(nullable = false)
+    private String material;
+    @Column(nullable = false)
+    private int quantity;
     @Column(nullable = false, precision = 19, scale = 2)
-    private BigDecimal price;
+    private BigDecimal unitPrice;
+    @Column(nullable = false, precision = 19, scale = 2)
+    private BigDecimal totalAmount;
     @Column(nullable = false)
-    private String currency = "INR";
-    @Column(nullable = false)
-    private LocalDate startDate;
-    @Column(nullable = false)
-    private LocalDate endDate;
+    private java.time.LocalDate deliveryDate;
+    @Column(columnDefinition = "TEXT")
+    private String paymentTerms;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AgreementStatus status = AgreementStatus.DRAFT;
@@ -35,6 +39,9 @@ public class Agreement {
     private LocalDateTime createdAt;
     private LocalDateTime acceptedBySupplierAt;
     private LocalDateTime acceptedByAdminAt;
+    private Long createdByManagerId;
+    private Long sentByManagerId;
+    private Long finalizedByAdminId;
 
     @PrePersist
     void onCreate() {
@@ -73,37 +80,18 @@ public class Agreement {
         this.terms = t;
     }
 
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal p) {
-        this.price = p;
-    }
-
-    public String getCurrency() {
-        return currency;
-    }
-
-    public void setCurrency(String c) {
-        this.currency = c;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDate d) {
-        this.startDate = d;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDate d) {
-        this.endDate = d;
-    }
+    public String getMaterial() { return material; }
+    public void setMaterial(String m) { this.material = m; }
+    public int getQuantity() { return quantity; }
+    public void setQuantity(int q) { this.quantity = q; }
+    public BigDecimal getUnitPrice() { return unitPrice; }
+    public void setUnitPrice(BigDecimal u) { this.unitPrice = u; }
+    public BigDecimal getTotalAmount() { return totalAmount; }
+    public void setTotalAmount(BigDecimal t) { this.totalAmount = t; }
+    public LocalDate getDeliveryDate() { return deliveryDate; }
+    public void setDeliveryDate(LocalDate d) { this.deliveryDate = d; }
+    public String getPaymentTerms() { return paymentTerms; }
+    public void setPaymentTerms(String p) { this.paymentTerms = p; }
 
     public AgreementStatus getStatus() {
         return status;
@@ -127,5 +115,29 @@ public class Agreement {
 
     public void setAcceptedByAdminAt(LocalDateTime d) {
         this.acceptedByAdminAt = d;
+    }
+
+    public Long getCreatedByManagerId() {
+        return createdByManagerId;
+    }
+
+    public void setCreatedByManagerId(Long createdByManagerId) {
+        this.createdByManagerId = createdByManagerId;
+    }
+
+    public Long getSentByManagerId() {
+        return sentByManagerId;
+    }
+
+    public void setSentByManagerId(Long sentByManagerId) {
+        this.sentByManagerId = sentByManagerId;
+    }
+
+    public Long getFinalizedByAdminId() {
+        return finalizedByAdminId;
+    }
+
+    public void setFinalizedByAdminId(Long finalizedByAdminId) {
+        this.finalizedByAdminId = finalizedByAdminId;
     }
 }

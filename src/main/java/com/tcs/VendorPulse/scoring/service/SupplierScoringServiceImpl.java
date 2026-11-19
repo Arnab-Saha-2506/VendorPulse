@@ -37,25 +37,25 @@ public class SupplierScoringServiceImpl implements SupplierScoringService {
     @Transactional
     public SupplierScore calculate(Long supplierId) {
         Supplier supplier = suppliers.findById(supplierId).orElseThrow();
-        List<Delivery> ds = deliveries.findByPurchaseOrderId(null); // placeholder: fetch by supplier via POs
-        // Simplified: gather deliveries for this supplier's POs
+        List<Delivery> ds = deliveries.findBySupplierId(supplierId);
         if (ds.size() < MIN_DELIVERIES) {
             return saveNotRated(supplier);
         }
         double deliveryReliability = ds.stream()
-                .mapToDouble(
-                        d -> d.getDeliveredQty() == 0 ? 0 : (double) d.getAcceptedQty() / d.getDeliveredQty() * 100)
+                .mapToDouble(d -> d.getDeliveredQty() == 0 ? 0 : (double) d.getAcceptedQty() / d.getDeliveredQty() * 100)
                 .average().orElse(0);
-        List<Commitment> cs = commitments.findByPurchaseOrderId(null); // placeholder
+        List<Commitment> cs = commitments.findBySupplierId(supplierId);
         int revisionCount = cs.stream().mapToInt(c -> revisions.findByCommitmentId(c.getId()).size()).sum();
         double commitmentStability = Math.max(0, 100 - revisionCount * 10.0);
-        long onTime = ds.stream().filter(d -> !d.getActualDeliveryDate().isAfter(
-                d.getPurchaseOrder().getIssueDate().plusDays(0))).count(); // placeholder logic
-        double deliveryConsistency = ds.isEmpty() ? 0 : (double) onTime / ds.size() * 100;
-        List<QualityFeedback> fs = feedbacks.findAll(); // filter by supplier deliveries in real code
+        List<Long> deliveryIds = ds.stream().map(Delivery::getId).toList();
+        List<QualityFeedback> fs = feedbacks.findAll().stream()
+                .filter(q -> deliveryIds.contains(q.getDelivery().getId())).toList();
         double qualityPerformance = fs.isEmpty() ? 0
                 : fs.stream().mapToInt(QualityFeedback::getRating).average().orElse(0) * 20;
-        double cdi = revisionCount * 5.0; // higher = more unstable
+        double deliveryConsistency = ds.isEmpty() ? 0
+                : (double) ds.stream().filter(d -> !d.getActualDeliveryDate().isAfter(d.getPurchaseOrder().getIssueDate())).count()
+                        / ds.size() * 100;
+        double cdi = revisionCount * 5.0;
         double overall = deliveryReliability * 0.3 + commitmentStability * 0.2 + deliveryConsistency * 0.3
                 + qualityPerformance * 0.2;
         SupplierScore sc = scores.findBySupplierId(supplierId).orElse(new SupplierScore());

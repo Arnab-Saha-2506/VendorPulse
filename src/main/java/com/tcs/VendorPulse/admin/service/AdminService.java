@@ -1,6 +1,7 @@
 package com.tcs.VendorPulse.admin.service;
 
 import com.tcs.VendorPulse.supplier.entity.Supplier;
+import com.tcs.VendorPulse.supplier.entity.SupplierDocument;
 import java.util.List;
 
 public interface AdminService {
@@ -11,4 +12,6 @@ public interface AdminService {
     Supplier approve(Long id, Long adminId, String remarks);
 
     Supplier reject(Long id, Long adminId, String remarks);
+
+    SupplierDocument getSupplierCertificate(Long id);
 }
